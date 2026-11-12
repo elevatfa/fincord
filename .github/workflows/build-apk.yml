@@ -5,7 +5,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'FinCord-Android-v0.2.zip'
+      - 'app/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
       - '.github/workflows/build-apk.yml'
 
 permissions:
@@ -28,15 +30,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Extract Android project
-        run: |
-          mkdir -p "$RUNNER_TEMP/fincord"
-          unzip -q FinCord-Android-v0.2.zip -d "$RUNNER_TEMP/fincord"
       - name: Build debug APK
-        run: gradle -p "$RUNNER_TEMP/fincord" assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FinCord-debug-apk
-          path: ${{ runner.temp }}/fincord/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
